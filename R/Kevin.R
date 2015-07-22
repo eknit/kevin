@@ -246,6 +246,8 @@ make_drift_correction_figure <- function(){
 #' make_carbon_normalization_figure
 
 make_carbon_normalization_figure <- function(){
+  standards_subset <- make_standards_subset(data)
+  samples <- make_samples(data)
   standards_meas <- ddply(standards_subset, "ID", function (x) 
     c(meas_d13C=mean(x$d13Cdc), meas_sd=sd(x$d13Cdc), meas_d15N=mean(x$d15Ndc), meas_sd=sd(x$d15Ndc)))
   par(mfrow=c(1,1))
@@ -272,6 +274,8 @@ make_carbon_normalization_figure <- function(){
 
 #' make_nitrogen_normalization_figure
 make_nitrogen_normalization_figure <- function(){
+  standards_subset <- make_standards_subset(data)
+  samples <- make_samples(data)
   standards_meas <- ddply(standards_subset, "ID", function (x) 
     c(meas_d13C=mean(x$d13Cdc), meas_sd=sd(x$d13Cdc), meas_d15N=mean(x$d15Ndc), meas_sd=sd(x$d15Ndc)))
   
@@ -310,7 +314,8 @@ make_nitrogen_normalization_figure <- function(){
 #' make_CN_figure
 
 make_CN_figure <- function(){
-  
+  standards_subset <- make_standards_subset(data)
+  samples <- make_samples(data)
   par(mfrow=c(2,2))
   par(mar=c(4,5,3,1))
   CNmin <- if (min(samples$CN) < 2.9) {min(samples$CN)} else { 2.8}

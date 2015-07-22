@@ -114,27 +114,45 @@ make_normalized <- function(data){
   write.csv(data, "Alldata.csv")
   data
 }
+#' d13C
+d13C <- expression(paste(delta^{13},"C (\u2030) drift corrected"))
+
+#' d15N
+d15N <- expression(paste(delta^{15},"N (\u2030) drift corrected"))
+
+#' Make standards subset
+#' 
+make_standards_subset <- function(data){
+  standards <- which(data$ID %in% c("ALANINE", "SALANINE", RM1.name, RM2.name))
+  standards_subset <- data[standards, ]
+  standards_subset <- standards_subset[standards_subset$ID != "ALANINE" & standards_subset$Ps > 8,]
+  standards_subset$ID <- factor(standards_subset$ID, levels=c(RM1.name, "SALANINE", RM2.name))
+  standards_subset
+}
+
+make_samples <- function(data){
+  standards <- which(data$ID %in% c("ALANINE", "SALANINE", RM1.name, RM2.name))
+  samples <- data[-standards,]
+  samples
+}
 
 #' make_carbon_standard_figure
 make_carbon_standards_figure <- function(){
   RM1 <- data[data$ID==paste(RM1.name),]
   RM2 <- data[data$ID==paste(RM2.name),]
   alanine <- data[data$ID=="SALANINE" & data$Ps > 10,]
-  standards <- which(data$ID %in% c("ALANINE", "SALANINE", RM1.name, RM2.name))
-  standards_subset <- data[standards, ]
-  standards_subset <- standards_subset[standards_subset$ID != "ALANINE" & standards_subset$Ps > 8,]
-  standards_subset$ID <- factor(standards_subset$ID, levels=c(RM1.name, "SALANINE", RM2.name))
-  samples <- data[-standards,]
+  standards_subset <- make_standards_subset(data)
+  samples <- make_samples(data)
+  #standards <- which(data$ID %in% c("ALANINE", "SALANINE", RM1.name, RM2.name))
+  #standards_subset <- data[standards, ]
+  #standards_subset <- standards_subset[standards_subset$ID != "ALANINE" & standards_subset$Ps > 8,]
+  #standards_subset$ID <- factor(standards_subset$ID, levels=c(RM1.name, "SALANINE", RM2.name))
+  #samples <- data[-standards,]
   standards_true <- data.frame(rbind(
     c(RM1.name, RM1T.C, RM1Tsd.C, RM1T.N, RM1Tsd.N), 
     c("SALANINE", -26.91, 0, -1.63, 0),
     c(RM2.name, RM2T.C, RM2Tsd.C, RM2T.N, RM2Tsd.N)))
   standards_true[,2:5] <- sapply(standards_true[,2:5], function(x) as.numeric(as.character(x)))
-  
-  
-  d13C <- expression(paste(delta^{13},"C (\u2030) drift corrected"))
-  d15N <- expression(paste(delta^{15},"N (\u2030) drift corrected"))
-  
   
   ###### For Carbon 
   par(mfrow=c(1,3))
@@ -170,20 +188,18 @@ make_nitrogen_standards_figure <- function(){
   RM1 <- data[data$ID==paste(RM1.name),]
   RM2 <- data[data$ID==paste(RM2.name),]
   alanine <- data[data$ID=="SALANINE" & data$Ps > 10,]
-  standards <- which(data$ID %in% c("ALANINE", "SALANINE", RM1.name, RM2.name))
-  standards_subset <- data[standards, ]
-  standards_subset <- standards_subset[standards_subset$ID != "ALANINE" & standards_subset$Ps > 8,]
-  standards_subset$ID <- factor(standards_subset$ID, levels=c(RM1.name, "SALANINE", RM2.name))
-  samples <- data[-standards,]
+  standards_subset <- make_standards_subset(data)
+  samples <- make_samples(data)
+  #standards <- which(data$ID %in% c("ALANINE", "SALANINE", RM1.name, RM2.name))
+  #standards_subset <- data[standards, ]
+  #standards_subset <- standards_subset[standards_subset$ID != "ALANINE" & standards_subset$Ps > 8,]
+  #standards_subset$ID <- factor(standards_subset$ID, levels=c(RM1.name, "SALANINE", RM2.name))
+  #samples <- data[-standards,]
   standards_true <- data.frame(rbind(
     c(RM1.name, RM1T.C, RM1Tsd.C, RM1T.N, RM1Tsd.N), 
     c("SALANINE", -26.91, 0, -1.63, 0),
     c(RM2.name, RM2T.C, RM2Tsd.C, RM2T.N, RM2Tsd.N)))
   standards_true[,2:5] <- sapply(standards_true[,2:5], function(x) as.numeric(as.character(x)))
-  
-  
-  d13C <- expression(paste(delta^{13},"C (\u2030) drift corrected"))
-  d15N <- expression(paste(delta^{15},"N (\u2030) drift corrected"))
   
   par(mfrow=c(1,3))
   par(mar=c(4,5,10,1))
@@ -218,14 +234,12 @@ make_drift_correction_figure <- function(){
   par(mfrow=c(2,2))
   par(mar=c(4,5,2,1))
   xtext <- "Position in Run"
-  d15N <- expression(paste("Normalized ", delta^{15},"N (\u2030)"))
-  d13C <- expression(paste("Normalized ", delta^{13},"C (\u2030)"))
   plot(data$Ps, data$normd13C, xlab=xtext, ylab=d13C, main="Change in d13C through run?")
   plot(data$Ps, data$normd15N, xlab=xtext, ylab=d15N, main="Change in d15N through run?" )
-  d15N <- expression(paste("Raw - drift-corrected ", Delta^{15},"N (\u2030)"))
-  d13C <- expression(paste("Raw - drift-corrected ", Delta^{13},"C (\u2030)"))
-  plot(data$Ps, data$d13Cdc-data$d13CR, ylab=d13C, xlab=xtext, main="Effect of drift correction vs position")
-  plot(data$Ps, data$d15Ndc-data$d15NR, ylab=d15N, xlab=xtext, main="Effect of drift correction vs position")
+  D15N <- expression(paste("Raw - drift-corrected ", Delta^{15},"N (\u2030)"))
+  D13C <- expression(paste("Raw - drift-corrected ", Delta^{13},"C (\u2030)"))
+  plot(data$Ps, data$d13Cdc-data$d13CR, ylab=D13C, xlab=xtext, main="Effect of drift correction vs position")
+  plot(data$Ps, data$d15Ndc-data$d15NR, ylab=D15N, xlab=xtext, main="Effect of drift correction vs position")
   dev.copy2pdf(file="plot3.pdf", encoding="WinAnsi")
 }
 
@@ -234,8 +248,6 @@ make_drift_correction_figure <- function(){
 make_carbon_normalization_figure <- function(){
   standards_meas <- ddply(standards_subset, "ID", function (x) 
     c(meas_d13C=mean(x$d13Cdc), meas_sd=sd(x$d13Cdc), meas_d15N=mean(x$d15Ndc), meas_sd=sd(x$d15Ndc)))
-  
-  
   par(mfrow=c(1,1))
   par(mar=c(5,5,5,5))
   ylims=c(min(standards_true[,2]-1), max(standards_true[,2]+1)) 
@@ -262,7 +274,6 @@ make_carbon_normalization_figure <- function(){
 make_nitrogen_normalization_figure <- function(){
   standards_meas <- ddply(standards_subset, "ID", function (x) 
     c(meas_d13C=mean(x$d13Cdc), meas_sd=sd(x$d13Cdc), meas_d15N=mean(x$d15Ndc), meas_sd=sd(x$d15Ndc)))
-  
   
   par(mfrow=c(1,1))
   par(mar=c(5,5,5,5))
@@ -304,8 +315,6 @@ make_CN_figure <- function(){
   par(mar=c(4,5,3,1))
   CNmin <- if (min(samples$CN) < 2.9) {min(samples$CN)} else { 2.8}
   CNmax <- if (max(samples$CN) > 3.6) {max(samples$CN)} else { 3.7}
-  d15N <- expression(paste("Normalized ", delta^{15},"N (\u2030)"))
-  d13C <- expression(paste("Normalized ", delta^{13},"C (\u2030)"))
   plot(samples$CN, samples$normd13C, xlim=c(CNmin, CNmax), xlab="C/N ratio", ylab=d13C)
   abline(v=2.9, col="red")
   abline(v=3.6, col="red")

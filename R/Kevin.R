@@ -51,7 +51,14 @@ make_archive <- function(){
   
   write.csv(final_archive, paste(runfile_id, "/final.archive.", runfile_id, ".csv", sep=""), row.names=F)
 }
-
+#' make standards_true
+make_standards_true <- function(){
+  standards_true <- data.frame(rbind(
+    c(RM1.name, RM1T.C, RM1Tsd.C, RM1T.N, RM1Tsd.N), 
+    c("SALANINE", -26.91, 0, -1.63, 0),
+    c(RM2.name, RM2T.C, RM2Tsd.C, RM2T.N, RM2Tsd.N)))
+  standards_true[,2:5] <- sapply(standards_true[,2:5], function(x) as.numeric(as.character(x)))
+}
 #' make_normalized
 
 make_normalized <- function(data){
@@ -61,12 +68,13 @@ make_normalized <- function(data){
   standards_subset <- standards_subset[standards_subset$ID != "ALANINE" & standards_subset$Ps > 8,]
   standards_meas <- ddply(standards_subset, "ID", function (x) 
     c(meas_d13C=mean(x$d13Cdc), meas_sd=sd(x$d13Cdc), meas_d15N=mean(x$d15Ndc), meas_sd=sd(x$d15Ndc)))
-  standards_true <- data.frame(rbind(
-    c(RM1.name, RM1T.C, RM1Tsd.C, RM1T.N, RM1Tsd.N), 
-    c("SALANINE", -26.91, 0, -1.63, 0),
-    c(RM2.name, RM2T.C, RM2Tsd.C, RM2T.N, RM2Tsd.N)))
-  standards_true[,2:5] <- sapply(standards_true[,2:5], function(x) as.numeric(as.character(x)))
-  
+  #standards_true <- data.frame(rbind(
+   # c(RM1.name, RM1T.C, RM1Tsd.C, RM1T.N, RM1Tsd.N), 
+   # c("SALANINE", -26.91, 0, -1.63, 0),
+   # c(RM2.name, RM2T.C, RM2Tsd.C, RM2T.N, RM2Tsd.N)))
+ # standards_true[,2:5] <- sapply(standards_true[,2:5], function(x) as.numeric(as.character(x)))
+  standards_true <- make_standards_true()
+ 
   get_run_values <- function(isotope){
     delta_dc <- data[, names(data)==paste(isotope, "dc", sep="")]
     RM1M <- mean(delta_dc[data$ID==RM1.name])
@@ -195,11 +203,12 @@ make_nitrogen_standards_figure <- function(){
   #standards_subset <- standards_subset[standards_subset$ID != "ALANINE" & standards_subset$Ps > 8,]
   #standards_subset$ID <- factor(standards_subset$ID, levels=c(RM1.name, "SALANINE", RM2.name))
   #samples <- data[-standards,]
-  standards_true <- data.frame(rbind(
-    c(RM1.name, RM1T.C, RM1Tsd.C, RM1T.N, RM1Tsd.N), 
-    c("SALANINE", -26.91, 0, -1.63, 0),
-    c(RM2.name, RM2T.C, RM2Tsd.C, RM2T.N, RM2Tsd.N)))
-  standards_true[,2:5] <- sapply(standards_true[,2:5], function(x) as.numeric(as.character(x)))
+  standards_true <- make_standards_true()
+  #standards_true <- data.frame(rbind(
+  #  c(RM1.name, RM1T.C, RM1Tsd.C, RM1T.N, RM1Tsd.N), 
+  #  c("SALANINE", -26.91, 0, -1.63, 0),
+  #  c(RM2.name, RM2T.C, RM2Tsd.C, RM2T.N, RM2Tsd.N)))
+  #standards_true[,2:5] <- sapply(standards_true[,2:5], function(x) as.numeric(as.character(x)))
   
   par(mfrow=c(1,3))
   par(mar=c(4,5,10,1))
@@ -248,6 +257,7 @@ make_drift_correction_figure <- function(){
 make_carbon_normalization_figure <- function(){
   standards_subset <- make_standards_subset(data)
   samples <- make_samples(data)
+  standards_true <- make_standards_true()
   standards_meas <- ddply(standards_subset, "ID", function (x) 
     c(meas_d13C=mean(x$d13Cdc), meas_sd=sd(x$d13Cdc), meas_d15N=mean(x$d15Ndc), meas_sd=sd(x$d15Ndc)))
   par(mfrow=c(1,1))
@@ -276,6 +286,7 @@ make_carbon_normalization_figure <- function(){
 make_nitrogen_normalization_figure <- function(){
   standards_subset <- make_standards_subset(data)
   samples <- make_samples(data)
+  standards_true <- make_standards_true()
   standards_meas <- ddply(standards_subset, "ID", function (x) 
     c(meas_d13C=mean(x$d13Cdc), meas_sd=sd(x$d13Cdc), meas_d15N=mean(x$d15Ndc), meas_sd=sd(x$d15Ndc)))
   

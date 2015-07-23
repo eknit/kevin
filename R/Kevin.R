@@ -302,6 +302,7 @@ make_nitrogen_normalization_figure <- function(){
   text(standards_meas[c(1,3),4], standards_true[c(1,3),4], c(paste(RM1.name), paste(RM2.name)), cex=0.6, adj=c(0,1))
   slope <- abs(standards_true[1,4]-standards_true[3,4])/abs(standards_meas[1,4]-standards_meas[3,4])
   intercept <- standards_true[1,4]-(standards_meas[1,4]*slope)
+  abline(a=intercept, b=slope, col="red")
   ylims=c(min(standards_true[,4]-1), max(standards_true[,4]+1)) 
   xlims=c(min(standards_meas[,4]-1), max(standards_meas[,4]+1))
   legend("topleft", paste("slope =", round(slope,4), ", intercept =", round(intercept,4)), col="red", lty=1)

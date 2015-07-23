@@ -58,6 +58,7 @@ make_standards_true <- function(){
     c("SALANINE", -26.91, 0, -1.63, 0),
     c(RM2.name, RM2T.C, RM2Tsd.C, RM2T.N, RM2Tsd.N)))
   standards_true[,2:5] <- sapply(standards_true[,2:5], function(x) as.numeric(as.character(x)))
+  standards_true
 }
 #' make_normalized
 

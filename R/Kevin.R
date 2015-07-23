@@ -188,7 +188,7 @@ make_carbon_standards_figure <- function(){
   mtext("Look at the spread of the measured values of References Materials and Alanines. What is the spread in permil?", cex=0.7, line=6, adj=0)
   mtext("Are the measured deltas of the alanines centred (randomly distributed) around their expected mean, in red?", cex=0.7, line=5.5, adj=0)
   mtext("Or is there a bias in the measurement? Are any of the alanines wrong? Position in run printed for identification", cex=0.7, line=5, adj=0)
-  dev.copy2pdf(file=paste(runfile_id, "/plot1.pdf"), encoding="WinAnsi")
+  dev.copy2pdf(file=paste(runfile_id, "/plot1.pdf", sep=""), encoding="WinAnsi")
 }
 
 #' make_nitrogen_standards_figure

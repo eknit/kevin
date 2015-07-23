@@ -120,7 +120,7 @@ make_normalized <- function(data){
   data$normd15N <- sapply(data$d15Ndc, function(x) normalize_x(x, "d15N"))[1,]
   data$d15Nsd <- sapply(data$d15Ndc, function(x) normalize_x(x, "d15N"))[2,]
   
-  write.csv(data, "Alldata.csv")
+  write.csv(data, paste(runfile_id, "/Alldata.csv", sep=""))
   data
 }
 #' d13C
@@ -188,7 +188,7 @@ make_carbon_standards_figure <- function(){
   mtext("Look at the spread of the measured values of References Materials and Alanines. What is the spread in permil?", cex=0.7, line=6, adj=0)
   mtext("Are the measured deltas of the alanines centred (randomly distributed) around their expected mean, in red?", cex=0.7, line=5.5, adj=0)
   mtext("Or is there a bias in the measurement? Are any of the alanines wrong? Position in run printed for identification", cex=0.7, line=5, adj=0)
-  dev.copy2pdf(file="plot1.pdf", encoding="WinAnsi")
+  dev.copy2pdf(file=paste(runfile_id, "/plot1.pdf"), encoding="WinAnsi")
 }
 
 #' make_nitrogen_standards_figure
@@ -235,7 +235,7 @@ make_nitrogen_standards_figure <- function(){
   mtext("Look at the spread of the measured values of References Materials and Alanines. What is the spread in permil?", cex=0.7, line=6, adj=0)
   mtext("Are the measured deltas of the alanines centred (randomly distributed) around their expected mean, in red?", cex=0.7, line=5.5, adj=0)
   mtext("Or is there a bias in the measurement? Are any of the alanines wrong? Position in run printed for identification", cex=0.7, line=5, adj=0)
-  dev.copy2pdf(file="plot2.pdf", encoding="WinAnsi")
+  dev.copy2pdf(file=paste(runfile_id,"/plot2.pdf", sep=""), encoding="WinAnsi")
 }
 
 #' make_drift_correction_figure
@@ -250,7 +250,7 @@ make_drift_correction_figure <- function(){
   D13C <- expression(paste("Raw - drift-corrected ", Delta^{13},"C (\u2030)"))
   plot(data$Ps, data$d13Cdc-data$d13CR, ylab=D13C, xlab=xtext, main="Effect of drift correction vs position")
   plot(data$Ps, data$d15Ndc-data$d15NR, ylab=D15N, xlab=xtext, main="Effect of drift correction vs position")
-  dev.copy2pdf(file="plot3.pdf", encoding="WinAnsi")
+  dev.copy2pdf(file=paste(runfile_id,"/plot3.pdf", sep=""), encoding="WinAnsi")
 }
 
 #' make_carbon_normalization_figure
@@ -280,7 +280,7 @@ make_carbon_normalization_figure <- function(){
   mtext("How much effect does the normalization regression have? How different is the slope from 1,", line=2, cex=0.7)
   mtext("how different is the intercept from zero? Are the error bars for the two reference materials as small", line=1, cex=0.7)
   mtext("as they should be? Do your samples lie on the regression line between the two reference materials?", line=0, cex=0.7)
-  dev.copy2pdf(file="plot4.pdf", encoding="WinAnsi")
+  dev.copy2pdf(file=paste(runfile_id,"/plot4.pdf", sep=""), encoding="WinAnsi")
 }
 
 #' make_nitrogen_normalization_figure
@@ -313,7 +313,7 @@ make_nitrogen_normalization_figure <- function(){
   mtext("How much effect does the normalization regression have? How different is the slope from 1,", line=2, cex=0.7)
   mtext("how different is the intercept from zero? Are the error bars for the two reference materials as small", line=1, cex=0.7)
   mtext("as they should be? Do your samples lie on the regression line between the two reference materials?", line=0, cex=0.7)
-  dev.copy2pdf(file="plot5.pdf", encoding="WinAnsi")
+  dev.copy2pdf(file=paste(runfile_id,"/plot4.pdf", sep=""), encoding="WinAnsi")
 }
 
 
@@ -341,12 +341,14 @@ make_CN_figure <- function(){
   par(mfrow=c(2,1))
   mtext("Similarly, was the weight of C and N measured high enough?", cex=0.7, line=2)
   mtext("Is there any biasing effect of weight on isotopic ratio, even for the OK samples?", cex=0.7, line=1)
-  dev.copy2pdf(file="plot6.pdf", onefile=T, encoding="WinAnsi")
+  dev.copy2pdf(file=paste(runfile_id,"/plot4.pdf", sep=""), encoding="WinAnsi")
 }
 
 #' final_compile
 final_compile <- function(){
-  if (!is.null(delete)) {samples <- samples[-which(samples$Ps==delete),]} #Remove lines to be deleted
+  if (!is.null(delete)) {
+  samples <- make_samples(data)
+  samples <- samples[-which(samples$Ps==delete),]} #Remove lines to be deleted
   data <- read_in_data(runfile_id)
   make_archive()
   data <- make_normalized(data)

@@ -293,28 +293,21 @@ make_nitrogen_normalization_figure <- function(){
   
   par(mfrow=c(1,1))
   par(mar=c(5,5,5,5))
-  ylims=c(min(standards_true[,2]-1), max(standards_true[,2]+1)) 
-  xlims=c(min(standards_meas[,2]-1), max(standards_meas[,2]+1))
-  
-  measuredN <- c(mean(RM1$d15Ndc), mean(RM2$d15Ndc))
-  trueN <- c(RM1T.N, RM2T.N)
-  trueNsd <- c(RM1Tsd.N, RM2Tsd.N)
-  par(mfrow=c(1,1))
-  plot(measuredN, trueN, type="n", ylab=expression(paste("True ", delta^{15},"N (\u2030)")), 
-       xlab=expression(paste("Measured ", delta^{15},"N (\u2030)")), 
-       ylim=c(min(trueN-1), max(trueN+1)), 
-       xlim=c(min(measuredN-1), max(measuredN+1)))
-  measuredNsd <- c(sd(RM1$d15Ndc), sd(RM2$d15Ndc))
-  arrows(measuredN-measuredNsd, trueN, measuredN+measuredNsd, trueN, angle=90, code=3, length=0.01)
-  arrows(measuredN, trueN-trueNsd, measuredN, trueN+trueNsd, angle=90, code=3, length=0.01)
-  text(measuredN, trueN, c(paste(RM1.name), paste(RM2.name)), cex=0.6, adj=c(0,1))
-  slope <- abs(trueN[1]-trueN[2])/abs(measuredN[1]-measuredN[2])
-  intercept <- RM1T.N-(mean(RM1$d15Ndc)*slope)
-  abline(a=intercept, b=slope, col="red")
+  ylims=c(min(standards_true[,4]-1), max(standards_true[,4]+1)) 
+  xlims=c(min(standards_meas[,4]-1), max(standards_meas[,4]+1))
+  plot(standards_meas[,4], standards_true[,4], type="n", ylab=expression(paste("True ", delta^{15},"N (\u2030)")), 
+       xlab=expression(paste("Measured ", delta^{15},"N (\u2030)")), ylim=ylims, xlim=xlims)
+  arrows(standards_meas[c(1,3),4]-standards_meas[c(1,3),5], standards_true[c(1,3),4], standards_meas[c(1,3),4]+standards_meas[c(1,3),5], standards_true[c(1,3),4], angle=90, code=3, length=0.01)
+  arrows(standards_meas[c(1,3),4], standards_true[c(1,3),4]-standards_true[c(1,3),5], standards_meas[c(1,3),4], standards_true[c(1,3),4]+standards_true[c(1,3),5], angle=90, code=3, length=0.01)
+  text(standards_meas[c(1,3),4], standards_true[c(1,3),4], c(paste(RM1.name), paste(RM2.name)), cex=0.6, adj=c(0,1))
+  slope <- abs(standards_true[1,4]-standards_true[3,4])/abs(standards_meas[1,4]-standards_meas[3,4])
+  intercept <- standards_true[1,4]-(standards_meas[1,4]*slope)
+  ylims=c(min(standards_true[,4]-1), max(standards_true[,4]+1)) 
+  xlims=c(min(standards_meas[,4]-1), max(standards_meas[,4]+1))
   legend("topleft", paste("slope =", round(slope,4), ", intercept =", round(intercept,4)), col="red", lty=1)
   par(new=T)
-  plot(samples$d15Ndc, samples$normd15N, axes=F, ylab="", xlab="", ylim=c(min(trueN-1), max(trueN+1)), 
-       xlim=c(min(measuredN-1), max(measuredN+1)))
+  plot(samples$d15Ndc, samples$normd15N, axes=F, ylab="", xlab="", ylim=ylims, 
+       xlim=xlims)
   mtext("Measured versus True (normalized) d15N", line=3)
   mtext("How much effect does the normalization regression have? How different is the slope from 1,", line=2, cex=0.7)
   mtext("how different is the intercept from zero? Are the error bars for the two reference materials as small", line=1, cex=0.7)

@@ -346,8 +346,8 @@ make_CN_figure <- function(){
 
 #' final_compile
 final_compile <- function(){
-  if (!is.null(delete)) {
   samples <- make_samples(data)
+  if (!is.null(delete)) {
   samples <- samples[-which(samples$Ps==delete),]} #Remove lines to be deleted
   data <- read_in_data(runfile_id)
   make_archive()

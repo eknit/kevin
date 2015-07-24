@@ -416,5 +416,6 @@ merge_plants <- function(data){
   Ckeep <- Cdata[include]
   merged <- merge(Ckeep, Nkeep, by="ID", all=T)
   merged$CalcCN <- (merged$pcC*14)/(merged$pcN*12)
+  merged
 }
 

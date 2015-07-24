@@ -414,6 +414,7 @@ merge_plants <- function(data){
   Cdata <- data[data$normd15N==0,]
   include <- c("Ps", "ID", "Wt", "CugR", "d13CR", "Cugdc", "d13Cdc", "pcC", "normd13C", "d13Csd", "Runfile")
   Ckeep <- Cdata[include]
-  merge(Ckeep, Nkeep, by="ID", all=T)
+  merged <- merge(Ckeep, Nkeep, by="ID", all=T)
+  merged$CalcCN <- (merged$pcC*14)/(merged$pcN*12)
 }
 

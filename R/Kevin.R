@@ -360,3 +360,60 @@ final_compile <- function(){
   make_CN_figure()
   write.csv(samples, paste(runfile_id, "/Samples.", runfile_id, ".csv", sep=""))
 }
+
+#' make_merged()
+
+make_merged <- function(directory){
+  setwd(directory)
+  files <- dir("~/Dropbox/dropbox AGRICURB/Runfiles") 
+  read_data  <- function(files, x){
+    this.file <- paste(files[x], "/Samples.", files[x], ".csv", sep="")
+    if (file.exists(this.file)){
+      read.csv(this.file,  stringsAsFactors=F)
+    }
+  }
+  result <- suppressWarnings(lapply(files, read_data))
+  cond <- sapply(result, function(x) length(x)>1)
+  not_null <- result[cond]
+  merged_all <- Reduce(function(x, y) merge(x, y, all=TRUE), not_null)
+  merged_all
+}
+
+#' get_codes
+#' Gets ID codes (first three letters is default, but can change)
+get_codes <- function(df, start=1, stop=3){
+  codes <- substring(df$ID, start, stop)
+}
+
+#' extract 
+#' Extracts specific sites codes - can take a vector of sites codes
+extract <- function(df, codes){
+  df$Site <- get_codes(df)
+  sub_df <- df[df$Site %in% codes,]
+  sub_df
+}
+
+#' merge_plants
+#' Checks for C-only and N-only runs, merges them together keeping unique column ids
+
+merge_plants <- function(data){
+  Ndata <- data[data$normd13C==0 | is.na(data$normd13C),]
+  for (i in 1:nrow(Ndata)){
+    if (is.na(Ndata$RunfileN)[i]) Ndata$RunfileN[i] <- Ndata$Runfile[i]
+  }
+  names(Ndata) <- paste(names(Ndata), "N", sep="")
+  names(Ndata)[names(Ndata)=="RunfileN"] <- "Runfile"
+  names(Ndata)[names(Ndata)=="RunfileNN"] <- "RunfileN"
+  names(Ndata)[names(Ndata)=="IDN"] <- "ID"
+  names(Ndata)[names(Ndata)=="pcNN"] <- "pcN"
+  names(Ndata)[names(Ndata)=="normd15NN"] <- "normd15N"
+  names(Ndata)[names(Ndata)=="d15NsdN"] <- "d15Nsd"
+  include <- c("PsN", "ID", "WtN", "NugRN", "d15NRN", "NugdcN", "d15NdcN", "pcN", "normd15N", "d15Nsd", "RunfileN")
+  Nkeep <- Ndata[include]
+  
+  Cdata <- data[data$normd15N==0,]
+  include <- c("Ps", "ID", "Wt", "CugR", "d13CR", "Cugdc", "d13Cdc", "pcC", "normd13C", "d13Csd", "Runfile")
+  Ckeep <- Cdata[include]
+  merge(Ckeep, Nkeep, by="ID", all=T)
+}
+

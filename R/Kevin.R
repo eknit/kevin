@@ -346,8 +346,6 @@ make_CN_figure <- function(){
 #' final_compile
 final_compile <- function(){
   data <- read_in_data(runfile_id)
-  if (!is.null(delete)) {
-    data <- data[-which(data$Ps==delete),]} #Remove lines to be deleted
   data <- make_normalized(data)
   make_carbon_standards_figure()
   make_nitrogen_standards_figure()

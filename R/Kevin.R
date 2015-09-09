@@ -28,7 +28,7 @@ read_in_data <- function(runfile_id){
 #' make_archive()
 make_archive <- function(){
   archive <- data.frame(samplename=data$ID, sampleweight = data$Wt, RS="S", Owner=Owner, PreparedBy =PreparedBy, Funding=Funding, Sampletype=0, Taxa="", site="", age.context=0, ugN=data$Nugdc, d15N=data$d15Ndc, ugC=data$Cugdc, d13C=data$d13Cdc, CN=data$CN, labno = paste(runfile_id, data$Ps, sep="-"))
-  
+  archive <- archive[order(data$Ps),]
   list.of.salanines <- data$Ps[archive$samplename=="SALANINE"]
   first.s <- list.of.salanines[1]
   first.r <- first.s-8
@@ -48,7 +48,6 @@ make_archive <- function(){
   header[3,] <-  c("sample name", "sample weight", "R/S", "Owner", "Prepared by", "Funding", "Sample type", "Taxa", "Site", "age/context", "ug N", "d15N AIR", "ug C", "d13C VPDB", "C/N molar", "Lab number")
   final_archive <- rbind(header, as.matrix(archive))
   colnames(final_archive) <- NULL
-  
   write.csv(final_archive, paste(runfile_id, "/final.archive.", runfile_id, ".csv", sep=""), row.names=F)
 }
 #' make standards_true

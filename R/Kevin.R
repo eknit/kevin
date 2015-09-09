@@ -118,7 +118,7 @@ make_normalized <- function(data){
   data$d13Csd <- sapply(data$d13Cdc, function(x) normalize_x(x, "d13C"))[2,]
   data$normd15N <- sapply(data$d15Ndc, function(x) normalize_x(x, "d15N"))[1,]
   data$d15Nsd <- sapply(data$d15Ndc, function(x) normalize_x(x, "d15N"))[2,]
-  
+  data <- data[order(data$Ps),]
   write.csv(data, paste(runfile_id, "/Alldata.csv", sep=""))
   data
 }
@@ -345,11 +345,9 @@ make_CN_figure <- function(){
 
 #' final_compile
 final_compile <- function(){
-  samples <- make_samples(data)
-  if (!is.null(delete)) {
-  samples <- samples[-which(samples$Ps==delete),]} #Remove lines to be deleted
   data <- read_in_data(runfile_id)
-  make_archive()
+  if (!is.null(delete)) {
+    data <- data[-which(data$Ps==delete),]} #Remove lines to be deleted
   data <- make_normalized(data)
   make_carbon_standards_figure()
   make_nitrogen_standards_figure()
@@ -357,6 +355,8 @@ final_compile <- function(){
   make_carbon_normalization_figure()
   make_nitrogen_normalization_figure()
   make_CN_figure()
+  samples <- make_samples(data)
+  samples <- samples[order(samples$Ps),]
   write.csv(samples, paste(runfile_id, "/Samples.", runfile_id, ".csv", sep=""))
 }
 

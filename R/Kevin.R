@@ -63,7 +63,7 @@ make_standards_true <- function(){
 #' make_normalized
 
 make_normalized <- function(data){
-  if (!is.null(delete)) {data <- data[-which(data$Ps==delete),]} #Remove lines to be deleted
+  if (!is.null(delete)) {data <- subset(data, !(Ps %in% delete))} #Remove lines to be deleted
   standards <- which(data$ID %in% c("ALANINE", "SALANINE", RM1.name, RM2.name))
   standards_subset <- data[standards, ]
   standards_subset <- standards_subset[standards_subset$ID != "ALANINE" & standards_subset$Ps > 8,]
